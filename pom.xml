@@ -40,8 +40,8 @@
 			      <username>${username}</username>
 			      <password>${password}</password>
 			      <applicationName>${appName}</applicationName>
-			      <replicas>1</replicas>
-			      <vCores>0.1</vCores>
+			      <replicas>${replica}</replicas>
+			      <vCores>${vCore}</vCores>
 			      <deploymentSettings>
 			        <http>
 			          <inbound>
