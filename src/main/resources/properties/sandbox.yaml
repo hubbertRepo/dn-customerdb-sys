@@ -1,0 +1,6 @@
+mysql:
+  host: "rds-mysql-2.cx40gw0estde.ap-southeast-2.rds.amazonaws.com"
+  port: "3306"
+  username: "admin"
+  database: "SFCustomers"
+  password: "![QE+6KOsWcKNHR8DrQW9eRg==]"

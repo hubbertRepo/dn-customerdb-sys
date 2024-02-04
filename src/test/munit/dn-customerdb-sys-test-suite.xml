@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="dn-customerdb-sys-test-suite.xml" />
+	<munit:test name="dn-customerdb-sys-test-suite-heart-beatTest" doc:id="fecc164c-4751-4e98-a5a4-a9bc7459c470" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to heart-beat" doc:id="f445670a-62bc-4ddd-a590-d42771108579" name="heart-beat"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="fb31d163-384a-47ad-baca-4bb30a01b665" actual="#[payload.status]" expected='#["ok"]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
