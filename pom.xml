@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>bluej.com</groupId>
+	<groupId>b447a6ec-fbc8-46ab-89bf-157697450185</groupId>
 	<artifactId>dn-customerdb-sys</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
@@ -12,7 +12,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<app.runtime>4.5.2</app.runtime>
 		<mule.maven.plugin.version>4.0.0</mule.maven.plugin.version>
 		<munit.version>3.0.0</munit.version>
 	</properties>
@@ -28,29 +27,52 @@
 			<plugin>
 			  <groupId>org.mule.tools.maven</groupId>
 			  <artifactId>mule-maven-plugin</artifactId>
-			  <version>3.7.1</version>
+			  <version>3.8.1</version>
 			  <extensions>true</extensions>
 			  <configuration>
 			    <cloudhub2Deployment>
-			      <uri>https://anypoint.mulesoft.com</uri>
-			      <provider>MC</provider>
-			      <environment>${environment}</environment>
-			      <target>${targetName}</target>
-			      <muleVersion>${muleVersion}</muleVersion>
-			      <username>${username}</username>
-			      <password>${password}</password>
-			      <applicationName>${appName}</applicationName>
-			      <replicas>${replica}</replicas>
-			      <vCores>${vCore}</vCores>
-			      <deploymentSettings>
-			        <http>
-			          <inbound>
-			            <publicUrl>${publicURL}</publicUrl>
-			            <forwardSslSession>true</forwardSslSession>
-			            <lastMileSecurity>true</lastMileSecurity>
-			          </inbound>
-			        </http>
-			      </deploymentSettings>
+					<uri>https://anypoint.mulesoft.com</uri>
+					<provider>MC</provider>
+					<environment>${environment}</environment>
+					<target>${targetName}</target>
+					<muleVersion>${app.runtime}</muleVersion>
+					<username>${anypoint.platform.username}</username>
+					<password>${anypoint.platform.password}</password>
+					<applicationName>${project.name}</applicationName>
+					<replicas>${replica}</replicas>
+					<vCores>${vCore}</vCores>					
+					<secureProperties>
+						<runtime.key>${runtime.key}</runtime.key>
+						<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
+						<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
+					</secureProperties>
+					<properties>
+						<https.port.value>8081</https.port.value>
+                    </properties>
+					<!--Free Tier -->
+                    <deploymentSettings>
+						<generateDefaultPublicUrl>true</generateDefaultPublicUrl>
+						<http>
+							<inbound>
+								<lastMileSecurity>true</lastMileSecurity>
+							</inbound>
+						</http>
+					</deploymentSettings>					
+
+<!-- PAID Version
+
+					<deploymentSettings>
+						<http>
+							<inbound>
+								<publicUrl>${publicURL}</publicUrl>
+								<forwardSslSession>true</forwardSslSession>
+								<lastMileSecurity>true</lastMileSecurity>
+							</inbound>
+						</http>
+					</deploymentSettings>
+
+
+-->
 			    </cloudhub2Deployment>
 			  </configuration>
 			</plugin>
@@ -76,6 +98,7 @@
 							<format>html</format>
 						</formats>
 					</coverage>
+					<runtimeVersion>${app.runtime}</runtimeVersion>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -137,6 +160,8 @@
 			<version>1.2.1</version>
 			<scope>test</scope>
 		</dependency>
+
+
 	</dependencies>
 
 	<repositories>
@@ -152,6 +177,13 @@
 			<url>https://repository.mulesoft.org/releases/</url>
 			<layout>default</layout>
 		</repository>
+		<repository>
+			<id>mulesoft-nexus</id>
+			<name>MuleSoft Nexus Repository</name>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+			<layout>default</layout>
+		</repository>
+	
 	</repositories>
 
 	<pluginRepositories>
