@@ -1,0 +1,89 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+ branches:
+   include:
+     - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- group: anypoint-platform-variables
+- group: retail-stream-variables
+- group: sandbox-variables
+
+stages:
+- stage: Building_API_Stage
+  jobs:
+  - job:
+    steps:
+    - task: CacheBeta@0
+      displayName: Cache Maven local repo
+      inputs:
+        key: 'pom.xml'
+        path: '$(HOME)/.m2/repository'
+    
+    - task: DownloadSecureFile@1
+      name: settingsxml
+      inputs:
+        secureFile: 'settings.xml'
+    
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+          New-Item -Type Directory -Force "${HOME}/.m2"
+          Copy-Item -Force "$(settingsxml.secureFilePath)" "${HOME}/.m2/settings.xml"
+    
+    - task: Maven@3
+      displayName: 'Build API'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        options: 'clean install package -DskipMunitTests' 
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.8'
+        mavenVersionOption: 'Default'
+        mavenOptions: '-Xmx3072m'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+
+    - task: CopyFiles@2
+      displayName: Copy Build Files
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/$(Build.Repository.Name)'
+        Contents: '**'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
+        OverWrite: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Build Artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: '$(project.name)'
+        publishLocation: 'Container'
+
+    - task: Maven@3
+      displayName: Deploy Artifact
+      inputs:
+        mavenPomFile: '$(System.ArtifactsDirectory)/$(project.name)/pom.xml'
+        goals: 'deploy -DskipMunitTests -DskipUnitTests -DmuleDeploy'
+        options: '-Denvironment=$(environment) -DtargetName=$(targetName) -Dapp.runtime=$(app.runtime) -Danypoint.platform.username=$(anypoint.platform.username) -Danypoint.platform.password=$(anypoint.platform.password) -Dproject.name=$(project.name) -Dreplica=$(replica) -DvCore=$(vCore) -Druntime.key=$(runtime.key) -Danypoint.platform.client_id=$(anypoint.platform.client_id) -Danypoint.platform.client_secret=$(anypoint.platform.client_secret)'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.8'
+        mavenVersionOption: 'Default'
+        mavenOptions: '-Xmx3072m'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+
+
+        
+  
